@@ -1,7 +1,23 @@
 FROM node:18-alpine  
-WORKDIR /app  
-COPY frontend/package.json .  
+
+RUN apk update
+
+RUN npm install -g http-server
+
+WORKDIR /app
+
+COPY package.json . 
+COPY package-lock.json .
+
 RUN npm install  
-COPY frontend/ .  
-RUN npm run build  
-CMD ["npm", "start"] 
+
+COPY . .
+
+RUN npm run build
+
+RUN adduser -D -u 1001 apprunner && \
+    chown -R apprunner /app
+
+USER 1001
+
+CMD ["http-server", "/app/dist"]

@@ -2,10 +2,10 @@ FROM python:3.9-slim
 
 WORKDIR /app  
 
-COPY backend/requirements.txt . 
+COPY requirements.txt . 
 
 RUN pip install --no-cache-dir --upgrade -r requirements.txt  
 
-COPY backend/ .  
+COPY . .  
 
-CMD ["fastapi", "run", "main.py", "--port", "80"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]

@@ -1,7 +1,7 @@
 
-from fastapi import ApiRouter
+from fastapi import APIRouter
 
-router = ApiRouter(
+router = APIRouter(
     prefix="/dispense",
     tags=["Dispense"],
 )
