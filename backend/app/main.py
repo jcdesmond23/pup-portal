@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import dispense_router
+from .routers import dispense_router
 
 app = FastAPI(
     title="Pup Portal Backend",
