@@ -1,19 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
 <svg version="1.1" id="_x32_" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
-	 width="800px" height="800px" viewBox="0 0 512 512"  xml:space="preserve">
-<style type="text/css">
-<![CDATA[
-	.dog-icon { fill: black; }
-	@media (prefers-color-scheme: dark) {
-		.dog-icon { fill: white; }
-	}
-	@media (prefers-color-scheme: light) {
-		.dog-icon { fill: black; }
-	}
-]]>
-</style>
+	 width="100%" height="100%" fill="currentColor" viewBox="0 0 512 512"  xml:space="preserve">
 <g>
 	<path class="dog-icon" d="M484.992,106.555c-42.188-21.672-96.219-40.547-145.484-61.734c-1.609-0.703-2.734-1.188-3.359-1.109
 		c-22.75-8.75-47.375-13.469-73.016-13.453c-13.047,0-25.375,0.688-37.063,2.016c-27.563,3.141-51.578,10.016-72.219,20.375
