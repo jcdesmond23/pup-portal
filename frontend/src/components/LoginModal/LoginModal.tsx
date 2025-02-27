@@ -44,7 +44,7 @@ function LoginModal() {
         )}
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label htmlFor="username" className="block text-sm font-semibold text-gray-700 mb-2">
+            <label htmlFor="username" className="block text-sm font-semibold text-gray-700 mb-2 pl-1 text-left">
               Username
             </label>
             <input 
@@ -52,14 +52,14 @@ function LoginModal() {
               type="text" 
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="block w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 text-gray-800"
+              className="block w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-blue-500 transition-all duration-200 text-gray-800"
               placeholder="Enter your username"
               required 
               disabled={isLoading}
             />
           </div>
           <div>
-            <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-2">
+            <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-2 pl-1 text-left">
               Password
             </label>
             <input 
@@ -67,7 +67,7 @@ function LoginModal() {
               type="password" 
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="block w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 text-gray-800"
+              className="block w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-blue-500 transition-all duration-200 text-gray-800"
               placeholder="Enter your password"
               required 
               disabled={isLoading}
