@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .routers import dispense_router
+from .routers import dispense_router, token_router
 
 app = FastAPI(
     title="Pup Portal Backend",
@@ -19,6 +19,7 @@ app.add_middleware(
 )
 
 # Include routers
+app.include_router(token_router)
 app.include_router(dispense_router)
 
 @app.get("/")

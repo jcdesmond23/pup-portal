@@ -5,16 +5,16 @@ import Footer from '../Footer/Footer'
 import LoginModal from '../LoginModal/LoginModal'
 
 function MainContent() {
-    const { user, openLoginModal } = useAuth();
+    const { isAuthenticated, openLoginModal } = useAuth();
     const [treatsDispensed, setTreatsDispensed] = useState(0)
 
     useEffect(() => {
-        if (!user) {
+        if (!isAuthenticated) {
             openLoginModal()
         }
-    }, [user, openLoginModal])
+    }, [isAuthenticated, openLoginModal])
     
-    if (!user) {
+    if (!isAuthenticated) {
         return <LoginModal />
     }
     
