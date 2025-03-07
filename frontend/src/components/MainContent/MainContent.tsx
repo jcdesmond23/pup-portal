@@ -3,6 +3,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import Header from '../Header/Header'
 import Footer from '../Footer/Footer'
 import LoginModal from '../LoginModal/LoginModal'
+import VideoFeed from '../VideoFeed/VideoFeed';
 
 function MainContent() {
     const { isAuthenticated, openLoginModal } = useAuth();
@@ -29,7 +30,7 @@ function MainContent() {
                                 <h2 className="text-lg xs:text-xl font-bold">Live Feed</h2>
                                 <h2 className="text-lg xs:text-xl font-bold">Treats Dispensed: {treatsDispensed}</h2>
                             </div>
-                            <div className="aspect-video bg-gray-200 rounded-lg shadow-md" />
+                            <VideoFeed />
                             <button 
                                 className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors duration-200 font-medium"
                                 onClick={() => setTreatsDispensed(treatsDispensed + 1)}
