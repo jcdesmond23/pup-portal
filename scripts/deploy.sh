@@ -22,8 +22,8 @@ Description=Pup Portal Backend
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/python3 $HOME/myapp/backend/app.py
-WorkingDirectory=$HOME/myapp/backend
+ExecStart=/usr/bin/python3 $HOME/pup-portal/backend/app.py
+WorkingDirectory=$HOME/pup-portal/backend
 User=$USER
 Group=$USER
 Restart=always
