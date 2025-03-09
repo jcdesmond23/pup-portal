@@ -1,0 +1,45 @@
+name: Deploy Pup Portal to Raspberry Pi
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup Node & Build Frontend
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: 'frontend/package-lock.json'
+      
+      - name: Build Frontend
+        run: |
+          cd frontend
+          npm ci
+          npm run build
+      
+      - name: Deploy to Pi
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.PI_HOST }}
+          username: ${{ secrets.PI_USER }}
+          key: ${{ secrets.PI_SSH_KEY }}
+          script_stop: true
+          script: |
+            if [ -d "~/pup-portal" ]; then
+              cd ~/pup-portal
+              git pull
+            else
+              git clone https://github.com/${{ github.repository }}.git ~/pup-portal
+            fi
+
+            cd ~/pup-portal
+            chmod +x ./scripts/deploy.sh
+            ./scripts/deploy.sh
