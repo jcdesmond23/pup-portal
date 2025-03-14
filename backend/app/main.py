@@ -29,3 +29,7 @@ async def root():
     Root endpoint to confirm the API is running
     """
     return {"message": "Welcome to Pup Portal Backend"}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)

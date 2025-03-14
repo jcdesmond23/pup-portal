@@ -10,9 +10,9 @@ from contextlib import asynccontextmanager
 try:
     import picamera
     PICAMERA_AVAILABLE = True
-except ImportError:
+except Exception as e:
     PICAMERA_AVAILABLE = False
-    logging.warning("picamera not available")
+    logging.warning(f"picamera not available: {e}")
 
 router = APIRouter()
 
