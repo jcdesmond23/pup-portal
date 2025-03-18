@@ -1,5 +1,3 @@
-import { API_BASE_URL } from './config';
-
 export interface LoginResponse {
     access_token: string;
     token_type: string;
@@ -10,7 +8,7 @@ export async function login(username: string, password: string): Promise<LoginRe
     formData.append('username', username);
     formData.append('password', password);
 
-    const response = await fetch(`${API_BASE_URL}/token`, {
+    const response = await fetch('/api/token', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',

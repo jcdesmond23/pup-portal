@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { API_BASE_URL } from '../../api/config';
 
 function VideoFeed() {
     const [error, setError] = useState<string | null>(null);
@@ -19,13 +18,13 @@ function VideoFeed() {
             // Retry connection after 5 seconds
             setTimeout(() => {
                 setIsLoading(true);
-                img.src = `${API_BASE_URL}/video/stream?t=${Date.now()}`;
+                img.src = `/api/video/stream?t=${Date.now()}`;
             }, 5000);
         };
 
         img.onload = handleLoad;
         img.onerror = handleError;
-        img.src = `${API_BASE_URL}/video/stream`;
+        img.src = `/api/video/stream?t=${Date.now()}`;
 
         return () => {
             img.onload = null;
@@ -37,7 +36,7 @@ function VideoFeed() {
         <div className="relative w-full aspect-video bg-gray-900 rounded-lg overflow-hidden">
             {!error && (
                 <img
-                    src={`${API_BASE_URL}/video/stream?t=${Date.now()}`}
+                    src={`/api/video/stream?t=${Date.now()}`}
                     alt="Live video feed"
                     className={`w-full h-full object-contain transition-opacity duration-300 ${
                         isLoading ? 'opacity-0' : 'opacity-100'
