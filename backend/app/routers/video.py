@@ -8,23 +8,22 @@ from typing import AsyncIterator
 from contextlib import asynccontextmanager
 
 try:
-    import picamera
+    from picamera2 import Picamera2
     PICAMERA_AVAILABLE = True
 except Exception as e:
     PICAMERA_AVAILABLE = False
-    logging.warning(f"picamera not available: {e}")
+    logging.warning(f"picamera2 not available: {e}")
 
 router = APIRouter()
 
 class MockCamera:
     def __init__(self):
         self.resolution = (640, 480)
-        self.framerate = 30
         
-    def capture(self, stream, format):
+    def capture_file(self, stream):
         # Create a test pattern
         img = Image.new('RGB', self.resolution, color='gray')
-        img.save(stream, format=format)
+        img.save(stream, format='jpeg')
 
 @asynccontextmanager
 async def get_camera():
@@ -36,11 +35,12 @@ async def get_camera():
         finally:
             pass
     else:
-        camera = picamera.PiCamera()
+        camera = Picamera2()
         try:
-            camera.resolution = (640, 480)
-            camera.framerate = 30
-            await asyncio.sleep(2)  # Camera warmup
+            config = camera.create_still_configuration(main={"size": (640, 480)})
+            camera.configure(config)
+            camera.start()
+            await asyncio.sleep(2)
             yield camera
         except Exception as e:
             logging.error(f"Camera initialization error: {e}")
@@ -49,6 +49,7 @@ async def get_camera():
                 detail="Failed to initialize camera"
             )
         finally:
+            camera.stop()
             camera.close()
 
 @router.get("/stream")
@@ -59,9 +60,15 @@ async def video_stream():
             while True:
                 try:
                     stream = io.BytesIO()
-                    camera.capture(stream, format='jpeg', quality=80, use_video_port=True)
+                    if PICAMERA_AVAILABLE:
+                        camera.capture_file(stream, format='jpeg')
+                    else:
+                        camera.capture_file(stream)
+                    
+                    stream.seek(0)
+                    
                     yield b'--frame\r\nContent-Type: image/jpeg\r\n\r\n' + stream.getvalue() + b'\r\n'
-                    await asyncio.sleep(1/30)  # 30 FPS
+                    await asyncio.sleep(1/30)
                 except Exception as e:
                     logging.error(f"Frame capture error: {e}")
                     raise HTTPException(

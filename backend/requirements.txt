@@ -8,4 +8,4 @@ pydantic-settings==2.2.1
 pydantic==2.6.3
 Pillow==10.2.0
 RPi.GPIO==0.7.1
-picamera==1.13
+picamera2==0.3.24
