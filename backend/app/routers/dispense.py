@@ -10,10 +10,7 @@ GPIO.setup(SERVO_PIN, GPIO.OUT)
 pwm = GPIO.PWM(SERVO_PIN, 50)  # 50 Hz frequency
 pwm.start(0)
 
-router = APIRouter(
-    prefix="/dispense",
-    tags=["Dispense"],
-)
+router = APIRouter(tags=["Dispense"],)
 
 def set_angle(angle: float) -> None:
     """Convert angle to duty cycle and set servo position"""
@@ -24,7 +21,7 @@ def set_angle(angle: float) -> None:
     GPIO.output(SERVO_PIN, False)
     pwm.ChangeDutyCycle(0)
 
-@router.post("/")
+@router.post("/dispense")
 async def dispense() -> Dict[str, str]:
     """
     Trigger servo to dispense treats.
