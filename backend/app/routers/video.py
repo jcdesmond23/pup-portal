@@ -1,15 +1,25 @@
-from fastapi import APIRouter, HTTPException
-from fastapi.responses import StreamingResponse
 import asyncio
 import io
 import logging
+from typing import AsyncGenerator
+
+from fastapi import APIRouter, HTTPException, status
+from fastapi.responses import StreamingResponse
 from picamera2 import Picamera2
 
-router = APIRouter(tags=["Video"])
+router = APIRouter(tags=["video"])
 
-@router.get("/video")
-async def video_stream():
-    """Stream video from the camera using picamera2."""
+@router.get("/video", response_class=StreamingResponse)
+async def video_stream() -> StreamingResponse:
+    """
+    Stream video from the camera using picamera2.
+
+    Returns:
+        StreamingResponse: A streaming response containing MJPEG frames
+    
+    Raises:
+        HTTPException: If camera initialization fails
+    """
     camera = Picamera2()
     
     try:
@@ -19,7 +29,7 @@ async def video_stream():
         camera.start()
         await asyncio.sleep(2)  # Give camera time to initialize
         
-        async def generate():
+        async def generate() -> AsyncGenerator[bytes, None]:
             try:
                 while True:
                     stream = io.BytesIO()
@@ -39,6 +49,6 @@ async def video_stream():
     except Exception as e:
         logging.error(f"Camera initialization error: {e}")
         raise HTTPException(
-            status_code=503,
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Failed to initialize camera"
         )

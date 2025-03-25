@@ -1,5 +1,6 @@
 from datetime import timedelta
-from typing import Annotated
+from typing import Annotated, Dict
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 import jwt
@@ -13,7 +14,19 @@ router = APIRouter(tags=["authentication"])
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
+async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]) -> Dict:
+    """
+    Validate JWT token and return the current user.
+
+    Args:
+        token: The JWT token to validate
+
+    Returns:
+        Dict: The current user's information
+
+    Raises:
+        HTTPException: If token validation fails
+    """
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -33,16 +46,43 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     return user
 
 async def get_current_active_user(
-    current_user: Annotated[dict, Depends(get_current_user)]
-):
+    current_user: Annotated[Dict, Depends(get_current_user)]
+) -> Dict:
+    """
+    Check if the current user is active.
+
+    Args:
+        current_user: The current user's information
+
+    Returns:
+        Dict: The current user's information if active
+
+    Raises:
+        HTTPException: If user is inactive
+    """
     if current_user.disabled:
-        raise HTTPException(status_code=400, detail="Inactive user")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Inactive user"
+        )
     return current_user
 
 @router.post("/token", response_model=Token)
 async def login_for_access_token(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
 ) -> Token:
+    """
+    Create a new access token for the user.
+
+    Args:
+        form_data: The username and password form data
+
+    Returns:
+        Token: The access token and its type
+
+    Raises:
+        HTTPException: If authentication fails
+    """
     user = authenticate_user(authorized_user, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
