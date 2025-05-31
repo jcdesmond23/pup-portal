@@ -43,7 +43,7 @@ async def dispense() -> Dict[str, str]:
     """
     try:
         set_angle(110)
-        set_angle(135)
+        set_angle(135) # 135 degrees is the angle the servo starts at 
         return {"message": "Treats dispensed successfully"}
     except Exception as e:
         raise HTTPException(
