@@ -2,6 +2,7 @@ import asyncio
 import io
 import logging
 from typing import AsyncGenerator
+from PIL import Image
 
 from fastapi import APIRouter, HTTPException, status
 from fastapi.responses import StreamingResponse
@@ -12,10 +13,10 @@ router = APIRouter(tags=["video"])
 @router.get("/video", response_class=StreamingResponse)
 async def video_stream() -> StreamingResponse:
     """
-    Stream video from the camera using picamera2.
+    Stream video from the camera using picamera2
 
     Returns:
-        StreamingResponse: A streaming response containing MJPEG frames
+        StreamingResponse: A streaming response containing JPEG video
     
     Raises:
         HTTPException: If camera initialization fails
@@ -32,10 +33,16 @@ async def video_stream() -> StreamingResponse:
         async def generate() -> AsyncGenerator[bytes, None]:
             try:
                 while True:
-                    stream = io.BytesIO()
-                    camera.capture_file(stream, format='jpeg')
-                    stream.seek(0)
-                    yield b'--frame\r\nContent-Type: image/jpeg\r\n\r\n' + stream.getvalue() + b'\r\n'
+                    stream_in = io.BytesIO()
+                    camera.capture_file(stream_in, format='jpeg')
+                    stream_in.seek(0)
+                    img = Image.open(stream_in)
+                    img = img.rotate(90, expand=True)  # Rotate 90 degrees to compensate for the camera's orientation
+                    stream_out = io.BytesIO()
+                    img.save(stream_out, format='JPEG')
+                    stream_out.seek(0)
+                    frame_data = stream_out.getvalue()
+                    yield b'--frame\r\nContent-Type: image/jpeg\r\n\r\n' + frame_data + b'\r\n'
                     await asyncio.sleep(1/30)  # 30 FPS
             finally:
                 camera.stop()

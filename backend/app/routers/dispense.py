@@ -3,6 +3,7 @@ from typing import Dict
 from fastapi import APIRouter, HTTPException, status
 import RPi.GPIO as GPIO
 import time
+import atexit
 
 # Configure GPIO
 SERVO_PIN = 18  # GPIO pin number for servo motor
@@ -22,8 +23,10 @@ def set_angle(angle: float) -> None:
     """
     duty = angle / 18 + 2
     GPIO.output(SERVO_PIN, True)
+    time.sleep(0.1)
     pwm.ChangeDutyCycle(duty)
-    time.sleep(1)
+    time.sleep(0.5)
+    time.sleep(0.1)
     GPIO.output(SERVO_PIN, False)
     pwm.ChangeDutyCycle(0)
 
@@ -39,10 +42,8 @@ async def dispense() -> Dict[str, str]:
         HTTPException: If there's an error during dispensing
     """
     try:
-        # Rotate to dispense position, sleep and return to starting position
-        set_angle(90)
-        time.sleep(1)
-        set_angle(0)
+        set_angle(110)
+        set_angle(135)
         return {"message": "Treats dispensed successfully"}
     except Exception as e:
         raise HTTPException(
@@ -50,11 +51,9 @@ async def dispense() -> Dict[str, str]:
             detail=f"Error dispensing treats: {str(e)}"
         )
 
-# Cleanup GPIO on module unload
-def cleanup() -> None:
-    """Clean up GPIO resources on program exit."""
+# Register cleanup function to run at interpreter shutdown
+def gpio_cleanup():
     pwm.stop()
     GPIO.cleanup()
 
-import atexit
-atexit.register(cleanup)
+atexit.register(gpio_cleanup)
