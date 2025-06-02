@@ -6,10 +6,12 @@ import time
 import atexit
 
 # Configure GPIO
-SERVO_PIN = 18  # GPIO pin number for servo motor
+SERVO_PIN = 18
+SERVO_START_POSITION = 155
+
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(SERVO_PIN, GPIO.OUT)
-pwm = GPIO.PWM(SERVO_PIN, 50)  # 50 Hz frequency
+pwm = GPIO.PWM(SERVO_PIN, 50)
 pwm.start(0)
 
 router = APIRouter(tags=["dispense"])
@@ -17,23 +19,19 @@ router = APIRouter(tags=["dispense"])
 def set_angle(angle: float) -> None:
     """
     Convert angle to duty cycle and set servo position.
-
+    
     Args:
-        angle: The angle to set the servo to (in degrees)
+        angle: The angle to set the servo to
     """
-    duty = angle / 18 + 2
-    GPIO.output(SERVO_PIN, True)
-    time.sleep(0.1)
+    duty = 5.0 + (angle / 180.0) * 5.0
     pwm.ChangeDutyCycle(duty)
     time.sleep(0.5)
-    time.sleep(0.1)
-    GPIO.output(SERVO_PIN, False)
     pwm.ChangeDutyCycle(0)
 
 @router.post("/dispense", response_model=Dict[str, str])
 async def dispense() -> Dict[str, str]:
     """
-    Trigger servo to dispense treats.
+    Trigger servo to dispense treats by moving 45 degrees and returning to start.
 
     Returns:
         Dict[str, str]: A message indicating success or failure
@@ -42,8 +40,13 @@ async def dispense() -> Dict[str, str]:
         HTTPException: If there's an error during dispensing
     """
     try:
-        set_angle(110)
-        set_angle(135) # 135 degrees is the angle the servo starts at 
+        # Move 30 degrees from starting position
+        dispense_angle = SERVO_START_POSITION - 45
+        
+        set_angle(dispense_angle)
+        time.sleep(0.3)
+        set_angle(SERVO_START_POSITION)
+        
         return {"message": "Treats dispensed successfully"}
     except Exception as e:
         raise HTTPException(
@@ -53,6 +56,7 @@ async def dispense() -> Dict[str, str]:
 
 # Register cleanup function to run at interpreter shutdown
 def gpio_cleanup():
+    """Clean up GPIO resources on shutdown."""
     pwm.stop()
     GPIO.cleanup()
 

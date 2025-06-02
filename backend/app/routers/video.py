@@ -37,7 +37,7 @@ async def video_stream() -> StreamingResponse:
                     camera.capture_file(stream_in, format='jpeg')
                     stream_in.seek(0)
                     img = Image.open(stream_in)
-                    img = img.rotate(90, expand=True)  # Rotate 90 degrees to compensate for the camera's orientation
+                    img = img.rotate(90, expand=True)  # Rotate 90 degrees to compensate for the camera's current orientation
                     stream_out = io.BytesIO()
                     img.save(stream_out, format='JPEG')
                     stream_out.seek(0)
