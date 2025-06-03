@@ -1,9 +1,11 @@
-from typing import Dict
+from typing import Dict, Annotated
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
 import RPi.GPIO as GPIO
 import time
 import atexit
+
+from ..routers.token import get_current_active_user
 
 # Configure GPIO
 SERVO_PIN = 18
@@ -29,7 +31,9 @@ def set_angle(angle: float) -> None:
     pwm.ChangeDutyCycle(0)
 
 @router.post("/dispense", response_model=Dict[str, str])
-async def dispense() -> Dict[str, str]:
+async def dispense(
+    current_user: Annotated[Dict, Depends(get_current_active_user)]
+) -> Dict[str, str]:
     """
     Trigger servo to dispense treats by moving 45 degrees and returning to start.
 

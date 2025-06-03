@@ -9,7 +9,7 @@ function LoginModal() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { login, loginModalOpen } = useAuth();
+  const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,8 +24,6 @@ function LoginModal() {
       setIsLoading(false);
     }
   };
-
-  if (!loginModalOpen) return null;
 
   return (
     <div 

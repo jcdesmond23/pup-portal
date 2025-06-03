@@ -1,3 +1,5 @@
+import { createApiError } from './errors';
+
 export interface LoginResponse {
     access_token: string;
     token_type: string;
@@ -17,8 +19,9 @@ export async function login(username: string, password: string): Promise<LoginRe
     });
 
     if (!response.ok) {
-        const error = await response.json().catch(() => ({ detail: 'An error occurred' }));
-        throw new Error(error.detail || 'Failed to login');
+        const errorData = await response.json().catch(() => ({ detail: 'An error occurred' }));
+        const message = errorData.detail || 'Failed to login';
+        throw createApiError(message, response.status);
     }
 
     return response.json();

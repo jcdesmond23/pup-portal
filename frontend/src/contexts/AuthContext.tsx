@@ -11,8 +11,6 @@ interface AuthContextType {
     username: string | null;
     login: (username: string, password: string) => Promise<void>;
     logout: () => void;
-    loginModalOpen: boolean;
-    openLoginModal: () => void;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -20,8 +18,6 @@ const AuthContext = createContext<AuthContextType>({
     username: null,
     login: async () => {},
     logout: () => {},
-    loginModalOpen: false,
-    openLoginModal: () => {},
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -31,7 +27,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const savedAuth = localStorage.getItem('auth');
         return savedAuth ? JSON.parse(savedAuth) : null;
     });
-    const [loginModalOpen, setLoginModalOpen] = useState(false);
 
     const login = useCallback(async (username: string, password: string) => {
         const { access_token } = await apiLogin(username, password);
@@ -43,16 +38,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         
         setAuthState(newAuthState);
         localStorage.setItem('auth', JSON.stringify(newAuthState));
-        setLoginModalOpen(false);
     }, []);
-
+    
     const logout = useCallback(() => {
         setAuthState(null);
         localStorage.removeItem('auth');
-    }, []);
-
-    const openLoginModal = useCallback(() => {
-        setLoginModalOpen(true);
     }, []);
 
     return (
@@ -61,8 +51,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             username: authState?.username || null,
             login,
             logout,
-            loginModalOpen,
-            openLoginModal,
         }}>
             {children}
         </AuthContext.Provider>

@@ -1,25 +1,20 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useAuth } from '../../contexts/AuthContext';
-import { dispenseTreat } from '../../api/treats';
+import { dispenseTreat } from '../../api/dispense';
+import { isAuthError } from '../../api/errors';
 import Header from '../Header/Header'
 import Footer from '../Footer/Footer'
-import LoginModal from '../LoginModal/LoginModal'
 import VideoFeed from '../VideoFeed/VideoFeed';
+import Login from '../Login/Login';
 
 function MainContent() {
-    const { isAuthenticated, openLoginModal } = useAuth();
+    const { isAuthenticated, logout } = useAuth();
     const [treatsDispensed, setTreatsDispensed] = useState(0);
     const [isDispensing, setIsDispensing] = useState(false);
     const [dispenseError, setDispenseError] = useState<string | null>(null);
-
-    useEffect(() => {
-        if (!isAuthenticated) {
-            openLoginModal()
-        }
-    }, [isAuthenticated, openLoginModal])
     
     if (!isAuthenticated) {
-        return <LoginModal />
+        return <Login />
     }
 
     const handleDispenseTreat = async () => {
@@ -32,6 +27,10 @@ function MainContent() {
             await dispenseTreat();
             setTreatsDispensed(prev => prev + 1);
         } catch (err) {
+            // Check if it's an auth error and logout if so
+            if (isAuthError(err)) {
+              logout();
+            }
             setDispenseError(err instanceof Error ? err.message : 'Failed to dispense treat');
         } finally {
             setIsDispensing(false);
